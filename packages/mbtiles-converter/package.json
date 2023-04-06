@@ -21,19 +21,20 @@
     "format": "prettier --write \"**/*.ts\""
   },
   "dependencies": {
-    "@com-tiles/spec": "*",
     "@com-tiles/provider": "*",
-    "commander": "^9.0.0",
-    "sqlite3": "^5.0.2"
+    "@com-tiles/spec": "*",
+    "commander": "^9.4.1",
+    "fflate": "^0.7.4",
+    "sqlite3": "^5.1.2"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.28.3",
-    "@typescript-eslint/parser": "^4.28.3",
-    "eslint": "^7.30.0",
-    "jest": "^26.6.3",
-    "prettier": "^2.5.1",
-    "ts-jest": "^26.5.5",
-    "typescript": "^4.2.4"
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "jest": "^29.3.1",
+    "prettier": "^2.8.0",
+    "ts-jest": "^29.0.3",
+    "typescript": "^4.9.3"
   },
   "files": [
     "dist/*",

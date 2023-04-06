@@ -30,9 +30,17 @@ export class TileMatrixFactory {
     private constructor() {}
 
     static createWebMercatorQuadFromLatLon(zoom: number, bounds: BoundingBox, aggregationCoefficient = 6): TileMatrix {
+        // fix if bounds out of WGS84 bounds
+        if (bounds[1] < -85.0511) {
+            bounds[1] = -85.0511;
+        }
+        if (bounds[3] > 85.0511) {
+            bounds[3] = 85.0511;
+        }
+
+        //TODO: quick and dirty hack -> find proper solution
         const minTileCol = TileMatrixFactory.lon2tile(bounds[0], zoom);
         const minTileRow = TileMatrixFactory.lat2tile(bounds[1], zoom);
-        //TODO: quick and dirty hack -> find proper solution
         const maxTileCol = TileMatrixFactory.lon2tile(bounds[2] - 0.00000001, zoom);
         const maxTileRow = TileMatrixFactory.lat2tile(bounds[3], zoom);
 
@@ -75,16 +83,22 @@ export class TileMatrixFactory {
         throw new Error("Not implemented yet.");
     }
 
+    /*
+     * MBTiles uses tms global-mercator profile
+     * https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames#Lon..2Flat._to_tile_numbers_2
+     */
     private static lon2tile(lon: number, zoom: number): number {
-        return Math.floor(((lon + 180) / 360) * 2 ** zoom);
+        return Math.floor(((lon + 180) / 360) * Math.pow(2, zoom));
     }
 
-    /* MBTiles uses tms global-mercator profile */
     private static lat2tile(lat: number, zoom: number): number {
-        const xyz = Math.floor(
-            ((1 - Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) / Math.PI) / 2) *
-                2 ** zoom,
+        return (
+            Math.pow(2, zoom) -
+            Math.floor(
+                ((1 - Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) / Math.PI) / 2) *
+                    Math.pow(2, zoom),
+            ) -
+            1
         );
-        return 2 ** zoom - xyz - 1;
     }
 }

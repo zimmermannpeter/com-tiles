@@ -4,6 +4,6 @@
     "./packages/*"
   ],
   "devDependencies": {
-    "@types/sqlite3": "^3.1.7"
+    "@types/sqlite3": "^3.1.8"
   }
 }

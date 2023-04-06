@@ -19,13 +19,13 @@ export enum TileFetchStrategy {
  *   So with the first initial fetch all the unfragmented part of the index has to be fetched and can't be lazy loaded.
  */
 export class MapLibreComtProvider {
-
     comtCaches: Map<string, ComtCache>;
     tileFetchStrategy: string;
-    
+
     constructor(tileFetchStrategy = TileFetchStrategy.BATCHED) {
         this.comtCaches = new Map();
-        this.tileFetchStrategy = tileFetchStrategy === TileFetchStrategy.BATCHED ? 'getTileWithBatchRequest' : 'getTile';
+        this.tileFetchStrategy =
+            tileFetchStrategy === TileFetchStrategy.BATCHED ? "getTileWithBatchRequest" : "getTile";
     }
 
     getCache(url) {
@@ -38,14 +38,14 @@ export class MapLibreComtProvider {
     }
 
     protocol = (params, callback) => {
-        if (params.type === 'json') {
-            const tilejson = { tiles: [params.url + "/{z}/{x}/{y}"] }
+        if (params.type === "json") {
+            const tilejson = { tiles: [params.url + "/{z}/{x}/{y}"] };
             callback(null, tilejson, null, null);
             return {
+                // eslint-disable-next-line @typescript-eslint/no-empty-function
                 cancel: () => {},
             };
-        }
-        else {
+        } else {
             const cancellationToken = new CancellationToken();
             const [, url, z, x, y] = params.url.match(/\/\/(.+)\/(\d+)\/(\d+)\/(\d+)/);
             const xyzIndex = {
@@ -53,7 +53,8 @@ export class MapLibreComtProvider {
                 y: parseInt(y, 10),
                 z: parseInt(z, 10),
             };
-            this.getCache(url)[this.tileFetchStrategy](xyzIndex, cancellationToken)
+            this.getCache(url)
+                [this.tileFetchStrategy](xyzIndex, cancellationToken)
                 .then((tile) => callback(null, tile, null, null));
             return {
                 cancel: () => {
@@ -61,12 +62,13 @@ export class MapLibreComtProvider {
                 },
             };
         }
-    }
+    };
 
     /**
      * Adds a COMT provider to MapLibre for displaying the map tiles of a COMTiles archive.
      * The COMT provider will be used when a source with a comt:// schema is used in a Mapbox style.
      */
+
     register(): void {
         maplibregl.addProtocol("comt", this.protocol);
     }

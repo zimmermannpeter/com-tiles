@@ -1,6 +1,7 @@
-import pako from "pako";
+import fflate from "fflate";
 import { TmsIndex } from "./tileIndex";
 import CancellationToken from "./cancellationToken";
+import pako from "pako";
 
 interface TileRange {
     startOffset: number;
@@ -95,5 +96,6 @@ export default class BatchRequestDispatcher {
         const tile = tileBatch.slice(offset, offset + size);
         const compressedTile = new Uint8Array(tile);
         return pako.ungzip(compressedTile);
+        // return fflate.decompressSync(compressedTile)
     }
 }

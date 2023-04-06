@@ -7,6 +7,7 @@ export interface TileRecord {
     column: number;
     row: number;
     data: Uint8Array;
+    fragmentIndex?: number;
 }
 
 export interface TileInfoRecord extends Omit<TileRecord, "data"> {
@@ -28,7 +29,7 @@ export default class TileProvider {
     /**
      *
      * @param repository Repository for accessing the tiles
-     * @param tileMatrixSet Describes the bounds of the tileset
+     * @param _tileMatrixSet Describes the bounds of the tile-set
      */
     constructor(private readonly repository: MBTilesRepository, private readonly _tileMatrixSet: TileMatrix[]) {}
 
@@ -51,6 +52,8 @@ export default class TileProvider {
                 : this.repository.getTilesByRowMajorOrder
         ).bind(this.repository);
 
+        let fragmentIndex = 0;
+
         for (let zoom = minZoom; zoom <= maxZoom; zoom++) {
             const tileMatrix = this.tileMatrixSet[zoom];
             const limits = tileMatrix.tileMatrixLimits;
@@ -58,7 +61,7 @@ export default class TileProvider {
             if (!TileProvider.useIndexFragmentation(tileMatrix)) {
                 const tiles = await getTiles(zoom, limits);
                 for (const tile of tiles) {
-                    yield { zoom, ...tile };
+                    yield { zoom, ...tile, fragmentIndex };
                 }
             } else {
                 /* use index fragments and sparse fragments */
@@ -75,7 +78,7 @@ export default class TileProvider {
                         );
                         const tiles = await getTiles(zoom, sparseFragmentBounds);
                         for (const tile of tiles) {
-                            yield { zoom, ...tile };
+                            yield { zoom, ...tile, fragmentIndex };
                         }
 
                         /* increment column and keep row */
@@ -83,6 +86,7 @@ export default class TileProvider {
                             minTileCol: denseFragmentBounds.maxTileCol + 1,
                             maxTileCol: denseFragmentBounds.maxTileCol + numIndexEntriesPerFragmentSide,
                         });
+                        fragmentIndex++;
                     }
 
                     /* reset column and increment row */

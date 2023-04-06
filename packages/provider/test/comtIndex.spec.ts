@@ -898,7 +898,7 @@ describe("getFragmentRangeForTile", () => {
             const comtIndex = new ComtIndex(metadata);
 
             const actualFragmentRange = comtIndex.getFragmentRangeForTile(tileIndex.z, tileIndex.x, tileIndex.y);
-            expect(actualFragmentRange.index).toEqual(expectedIndex);
+            expect(actualFragmentRange.fragmentIndex).toEqual(expectedIndex);
         },
     );
 });
