@@ -104,6 +104,17 @@ function writeMetadata(stream: fs.WriteStream, metadataJson: string) {
     stream.write(metadataJson, "utf-8");
 }
 
+async function writeFragmentIndex(stream: fs.WriteStream, tileProvider: MapTileProvider, metadata: Metadata) {
+    const comtIndex = new ComtIndex(metadata);
+    const tiles = tileProvider.getTilesInRowMajorOrder(RecordType.SIZE);
+
+
+    for await (const { zoom, column, row, size: tileLength } of tiles) { }
+    //
+
+
+}
+
 async function writeIndex(
     stream: fs.WriteStream,
     tileProvider: MapTileProvider,

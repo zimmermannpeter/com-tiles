@@ -27,9 +27,16 @@ export default function createWmqTileMatrixSet(
  * */
 export class TileMatrixFactory {
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    private constructor() {}
+    private constructor() { }
 
     static createWebMercatorQuadFromLatLon(zoom: number, bounds: BoundingBox, aggregationCoefficient = 6): TileMatrix {
+        // fix if bounds out of WGS84 bounds
+        if (bounds[1] < -85.0511) {
+            bounds[1] = -85.0511;
+        }
+        if (bounds[3] > 85.0511) {
+            bounds[3] = 85.0511;
+        }
         const minTileCol = TileMatrixFactory.lon2tile(bounds[0], zoom);
         const minTileRow = TileMatrixFactory.lat2tile(bounds[1], zoom);
         //TODO: quick and dirty hack -> find proper solution
@@ -83,7 +90,7 @@ export class TileMatrixFactory {
     private static lat2tile(lat: number, zoom: number): number {
         const xyz = Math.floor(
             ((1 - Math.log(Math.tan((lat * Math.PI) / 180) + 1 / Math.cos((lat * Math.PI) / 180)) / Math.PI) / 2) *
-                2 ** zoom,
+            2 ** zoom,
         );
         return 2 ** zoom - xyz - 1;
     }

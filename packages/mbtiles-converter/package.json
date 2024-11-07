@@ -21,10 +21,12 @@
     "format": "prettier --write \"**/*.ts\""
   },
   "dependencies": {
-    "@com-tiles/spec": "*",
     "@com-tiles/provider": "*",
+    "@com-tiles/spec": "*",
+    "@types/varint": "^6.0.3",
     "commander": "^9.0.0",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.2",
+    "varint": "^6.0.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.28.3",

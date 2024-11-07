@@ -1,4 +1,6 @@
 import { TileMatrix } from "@com-tiles/spec/types/tileMatrix";
+import { TileInfoRecord } from "./tileProvider";
+import { encode } from "varint";
 
 export function toBytesLE(num: number, numBytes = 5): Buffer {
     const buffer = Buffer.alloc(numBytes);
@@ -75,4 +77,32 @@ export function calculateNumTiles(tileMatrixSet: TileMatrix[]): number {
     return tileMatrixSet.reduce((numTiles, { tileMatrixLimits: limits }) => {
         return numTiles + (limits.maxTileRow - limits.minTileRow + 1) * (limits.maxTileCol - limits.minTileCol + 1);
     }, 0);
+}
+
+export function convertUInt40LEToNumber(buffer: Buffer, offset: number): number {
+    return (buffer.readUInt32LE(offset + 1) << 8) + buffer.readUInt8(offset);
+}
+
+export function zigzagEncode(n: number): number {
+    return (n >> 31) ^ (n << 1);
+}
+
+export function varintEncode(value: number): Buffer {
+    const size = encode(value).length;
+    const buffer = Buffer.alloc(size);
+    encode(value, buffer);
+    return buffer;
+}
+
+export function rleEncode(tiles: TileInfoRecord[]): { runs: number; size: number }[] {
+    return tiles.reduce((p, c, i) => {
+        const previousTile = p.at(-1);
+        if (previousTile?.size !== c.size) {
+            p.push({ runs: 1, size: c.size });
+        } else {
+            previousTile.runs = previousTile.runs + 1;
+        }
+
+        return p;
+    }, []);
 }
